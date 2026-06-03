@@ -6,10 +6,15 @@ import android.content.pm.PackageManager
 import android.content.Intent
 import android.net.*
 import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSpecifier
+import androidx.annotation.RequiresApi
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,8 +25,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wifiManager: WifiManager
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var statusText: TextView
+    private lateinit var webView: WebView
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val TAG = "WifiSelector"
+    private val ESP32_URL = "http://192.168.4.1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +38,40 @@ class MainActivity : AppCompatActivity() {
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         statusText = findViewById(R.id.statusText)
+        webView = findViewById(R.id.webView)
 
+        setupWebView()
         checkPermissions()
+    }
+
+    private fun setupWebView() {
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            loadWithOverviewMode = true
+            useWideViewPort = true
+        }
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                // Hide status immediately when page starts loading
+                statusText.visibility = View.GONE
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                statusText.visibility = View.GONE
+            }
+
+            override fun onReceivedError(view: WebView?, request: android.webkit.WebResourceRequest?, error: android.webkit.WebResourceError?) {
+                super.onReceivedError(view, request, error)
+                updateStatus("Connection error")
+            }
+        }
+
+        // Start hidden
+        webView.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -43,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     private fun forceWifiOn() {
         // Always try to force WiFi on first
         if (!wifiManager.isWifiEnabled) {
-            updateStatus("Forcing WiFi ON...")
             Log.d(TAG, "WiFi is off, attempting to enable")
 
             // Try to kill SoftAP first
@@ -64,11 +103,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "setWifiEnabled failed")
                 // On Android 10+, use Settings panel
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    updateStatus("Tap to enable WiFi")
-                    statusText.setOnClickListener {
-                        startActivity(Intent(Settings.Panel.ACTION_WIFI))
-                    }
-                    // Auto-open panel
+                    // Auto-open panel silently
                     startActivity(Intent(Settings.Panel.ACTION_WIFI))
                 } else {
                     tryBind()
@@ -97,7 +132,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Release the hotspot binding
+
+        // Unregister network callback for API 29+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            networkCallback?.let {
+                try {
+                    connectivityManager.unregisterNetworkCallback(it)
+                    Log.d(TAG, "Unregistered network callback")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to unregister callback", e)
+                }
+            }
+        }
+
+        // Release binding for all versions
         try {
             connectivityManager.bindProcessToNetwork(null)
             Log.d(TAG, "Released binding")
@@ -143,10 +191,9 @@ class MainActivity : AppCompatActivity() {
                 // WiFi enabled but not connected
                 if (!settingsOpened) {
                     settingsOpened = true
-                    updateStatus("Opening WiFi Settings...")
                     startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
                 } else {
-                    updateStatus("No WiFi connected\n\nTap to open Settings")
+                    updateStatus("No WiFi connected\n\nTap to open Settings", true)
                     statusText.setOnClickListener {
                         settingsOpened = true
                         startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
@@ -163,18 +210,17 @@ class MainActivity : AppCompatActivity() {
         if (apState == 13 || apState == 12) { // AP_STATE_ENABLED or AP_STATE_ENABLING
             // Check if accessibility service is enabled
             if (CarPlayKillerService.isServiceEnabled(this)) {
-                // Auto-trigger WiFi enable
-                updateStatus("Enabling WiFi...")
+                // Auto-trigger WiFi enable silently
                 CarPlayKillerService.triggerEnableWifi()
             } else {
                 // Need accessibility - prompt once
                 if (!accessibilityPrompted) {
                     accessibilityPrompted = true
-                    updateStatus("Setup required\n\nEnable accessibility service")
+                    updateStatus("Setup required\n\nEnable accessibility service", true)
                     val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     startActivity(intent)
                 } else {
-                    updateStatus("Enable accessibility service\n\nTap to open settings")
+                    updateStatus("Enable accessibility service\n\nTap to open settings", true)
                     statusText.setOnClickListener {
                         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
                         startActivity(intent)
@@ -182,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } else {
-            updateStatus("Cannot enable WiFi\n\nTap to retry")
+            updateStatus("Cannot enable WiFi\n\nTap to retry", true)
             statusText.setOnClickListener {
                 forceWifiOn()
             }
@@ -207,28 +253,87 @@ class MainActivity : AppCompatActivity() {
         return ssid.trim('"')
     }
 
-    @Suppress("DEPRECATION")
     private fun bindToWifi(ssid: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            bindToWifiApi29Plus(ssid)
+        } else {
+            bindToWifiLegacy(ssid)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun bindToWifiApi29Plus(ssid: String) {
+        try {
+            val specifier = WifiNetworkSpecifier.Builder()
+                .setSsid(ssid)
+                .build()
+
+            val request = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .setNetworkSpecifier(specifier)
+                .build()
+
+            val callback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    connectivityManager.bindProcessToNetwork(network)
+                    Log.d(TAG, "Bound to $ssid (API 29+)")
+                    loadEsp32Interface()
+                }
+
+                override fun onUnavailable() {
+                    updateStatus("WiFi not available", true)
+                    Log.d(TAG, "WiFi connection unavailable")
+                }
+
+                override fun onLost(network: Network) {
+                    updateStatus("Connection lost", true)
+                    Log.d(TAG, "Lost WiFi connection")
+                }
+            }
+
+            networkCallback = callback
+            connectivityManager.requestNetwork(request, callback)
+        } catch (e: Exception) {
+            Log.e(TAG, "API 29+ bind failed", e)
+            updateStatus("Error: ${e.message}")
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun bindToWifiLegacy(ssid: String) {
         try {
             for (network in connectivityManager.allNetworks) {
                 val caps = connectivityManager.getNetworkCapabilities(network)
                 if (caps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true) {
                     connectivityManager.bindProcessToNetwork(network)
-                    updateStatus("OWNED: $ssid")
-                    Log.d(TAG, "Bound to $ssid: $network")
+                    Log.d(TAG, "Bound to $ssid (legacy)")
+                    loadEsp32Interface()
                     return
                 }
             }
-            updateStatus("WiFi not available")
+            updateStatus("WiFi not available", true)
         } catch (e: Exception) {
-            Log.e(TAG, "Bind failed", e)
-            updateStatus("Error: ${e.message}")
+            Log.e(TAG, "Legacy bind failed", e)
+            updateStatus("Error: ${e.message}", true)
         }
     }
 
-    private fun updateStatus(msg: String) {
+    private fun loadEsp32Interface() {
+        runOnUiThread {
+            webView.visibility = View.VISIBLE
+            statusText.visibility = View.GONE
+            webView.loadUrl(ESP32_URL)
+            Log.d(TAG, "Loading ESP32 interface: $ESP32_URL")
+        }
+    }
+
+    private fun updateStatus(msg: String, show: Boolean = true) {
         Log.d(TAG, msg)
-        statusText.text = msg
+        runOnUiThread {
+            statusText.text = msg
+            statusText.visibility = if (show) View.VISIBLE else View.GONE
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
