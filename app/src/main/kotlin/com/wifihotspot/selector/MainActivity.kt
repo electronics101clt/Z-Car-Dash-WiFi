@@ -3,12 +3,14 @@ package com.wifihotspot.selector
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.net.*
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -342,17 +344,25 @@ class MainActivity : AppCompatActivity() {
                 override fun onAvailable(network: Network) {
                     connectivityManager.bindProcessToNetwork(network)
                     Log.d(TAG, "Bound to $ssid (API 29+)")
+
+                    // Dismiss settings dialog by bringing app to foreground
+                    val intent = Intent(this@MainActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+
                     loadEsp32Interface()
                 }
 
                 override fun onUnavailable() {
                     updateStatus("WiFi not available", true)
                     Log.d(TAG, "WiFi connection unavailable")
+                    showConnectionLostDialog()
                 }
 
                 override fun onLost(network: Network) {
                     updateStatus("Connection lost", true)
                     Log.d(TAG, "Lost WiFi connection")
+                    showConnectionLostDialog()
                 }
             }
 
@@ -389,6 +399,20 @@ class MainActivity : AppCompatActivity() {
             statusText.visibility = View.GONE
             webView.loadUrl(ESP32_URL)
             Log.d(TAG, "Loading ESP32 interface: $ESP32_URL")
+        }
+    }
+
+    private fun showConnectionLostDialog() {
+        runOnUiThread {
+            AlertDialog.Builder(this)
+                .setTitle("Connection Lost")
+                .setMessage("WiFi connection to ESP32 was lost")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    finish()
+                }
+                .setCancelable(false)
+                .show()
         }
     }
 
