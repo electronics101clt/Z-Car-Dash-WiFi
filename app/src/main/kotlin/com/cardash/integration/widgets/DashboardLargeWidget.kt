@@ -95,15 +95,15 @@ class DashboardLargeWidget : BaseWidgetProvider() {
         appWidgetId: Int,
         views: RemoteViews
     ) {
-        views.setTextViewText(R.id.speed_value, "--")
-        views.setTextViewText(R.id.rpm_value, "--")
-        views.setTextViewText(R.id.coolant_value, "--°")
-        views.setTextViewText(R.id.fuel_value, "--%")
-        views.setTextViewText(R.id.voltage_value, "--.-V")
-        views.setTextViewText(R.id.oil_value, "--°")
-        views.setTextViewText(R.id.trip_value, "-- km")
-        views.setTextViewText(R.id.avg_speed_value, "-- km/h")
-        views.setTextViewText(R.id.max_speed_value, "-- km/h")
+        views.setTextViewText(R.id.speed_value, "0")
+        views.setTextViewText(R.id.rpm_value, "0")
+        views.setTextViewText(R.id.coolant_value, "0°")
+        views.setTextViewText(R.id.fuel_value, "0%")
+        views.setTextViewText(R.id.voltage_value, "0.-V")
+        views.setTextViewText(R.id.oil_value, "0°")
+        views.setTextViewText(R.id.trip_value, "0 km")
+        views.setTextViewText(R.id.avg_speed_value, "0 km/h")
+        views.setTextViewText(R.id.max_speed_value, "0 km/h")
 
         views.setProgressBar(R.id.rpm_progress, 8000, 0, false)
         views.setProgressBar(R.id.coolant_progress, 130, 0, false)

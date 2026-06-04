@@ -40,7 +40,7 @@ class SpeedSmallWidget : BaseWidgetProvider() {
         appWidgetId: Int,
         views: RemoteViews
     ) {
-        views.setTextViewText(R.id.speed_value, "--")
+        views.setTextViewText(R.id.speed_value, "0")
         views.setTextColor(R.id.speed_value, COLOR_DISCONNECTED)
         views.setImageViewResource(R.id.connection_status, R.drawable.ic_disconnected)
         appWidgetManager.updateAppWidget(appWidgetId, views)

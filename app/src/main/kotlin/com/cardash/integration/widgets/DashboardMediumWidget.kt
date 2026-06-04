@@ -84,13 +84,13 @@ class DashboardMediumWidget : BaseWidgetProvider() {
         appWidgetId: Int,
         views: RemoteViews
     ) {
-        views.setTextViewText(R.id.speed_value, "--")
-        views.setTextViewText(R.id.rpm_value, "--")
-        views.setTextViewText(R.id.coolant_value, "--")
-        views.setTextViewText(R.id.fuel_value, "--")
-        views.setTextViewText(R.id.voltage_value, "--.-V")
-        views.setTextViewText(R.id.oil_value, "--°C")
-        views.setTextViewText(R.id.trip_value, "--.-km")
+        views.setTextViewText(R.id.speed_value, "0")
+        views.setTextViewText(R.id.rpm_value, "0")
+        views.setTextViewText(R.id.coolant_value, "0")
+        views.setTextViewText(R.id.fuel_value, "0")
+        views.setTextViewText(R.id.voltage_value, "0.-V")
+        views.setTextViewText(R.id.oil_value, "0°C")
+        views.setTextViewText(R.id.trip_value, "0.-km")
 
         views.setProgressBar(R.id.rpm_progress, 8000, 0, false)
         views.setProgressBar(R.id.coolant_progress, 130, 0, false)
@@ -100,7 +100,7 @@ class DashboardMediumWidget : BaseWidgetProvider() {
         views.setTextViewText(R.id.connection_text, "Tap to connect")
         views.setTextColor(R.id.connection_text, COLOR_DISCONNECTED)
 
-        views.setTextViewText(R.id.last_update, "--:--:--")
+        views.setTextViewText(R.id.last_update, "00:00:00")
         views.setViewVisibility(R.id.warning_icon, View.GONE)
 
         appWidgetManager.updateAppWidget(appWidgetId, views)

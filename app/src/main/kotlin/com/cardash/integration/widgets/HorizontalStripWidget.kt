@@ -60,11 +60,11 @@ class HorizontalStripWidget : BaseWidgetProvider() {
         appWidgetId: Int,
         views: RemoteViews
     ) {
-        views.setTextViewText(R.id.speed_value, "--")
-        views.setTextViewText(R.id.rpm_value, "--")
-        views.setTextViewText(R.id.coolant_value, "--°")
-        views.setTextViewText(R.id.fuel_value, "--%")
-        views.setTextViewText(R.id.voltage_value, "--.-")
+        views.setTextViewText(R.id.speed_value, "0")
+        views.setTextViewText(R.id.rpm_value, "0")
+        views.setTextViewText(R.id.coolant_value, "0°")
+        views.setTextViewText(R.id.fuel_value, "0%")
+        views.setTextViewText(R.id.voltage_value, "0.-")
 
         views.setTextColor(R.id.speed_value, COLOR_DISCONNECTED)
         views.setImageViewResource(R.id.connection_icon, R.drawable.ic_disconnected)

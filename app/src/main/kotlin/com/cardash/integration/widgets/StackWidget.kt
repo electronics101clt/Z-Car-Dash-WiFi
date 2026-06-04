@@ -81,7 +81,7 @@ class StackWidget : BaseWidgetProvider() {
         views: RemoteViews
     ) {
         views.setImageViewResource(R.id.connection_icon, R.drawable.ic_disconnected)
-        views.setTextViewText(R.id.last_update, "--:--")
+        views.setTextViewText(R.id.last_update, "00:00")
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }

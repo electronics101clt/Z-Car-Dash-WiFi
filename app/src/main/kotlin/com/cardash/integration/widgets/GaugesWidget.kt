@@ -68,11 +68,11 @@ class GaugesWidget : BaseWidgetProvider() {
         appWidgetId: Int,
         views: RemoteViews
     ) {
-        views.setTextViewText(R.id.speed_value, "--")
-        views.setTextViewText(R.id.rpm_value, "--")
-        views.setTextViewText(R.id.fuel_value, "--%")
-        views.setTextViewText(R.id.coolant_value, "--°")
-        views.setTextViewText(R.id.voltage_value, "--.-V")
+        views.setTextViewText(R.id.speed_value, "0")
+        views.setTextViewText(R.id.rpm_value, "0")
+        views.setTextViewText(R.id.fuel_value, "0%")
+        views.setTextViewText(R.id.coolant_value, "0°")
+        views.setTextViewText(R.id.voltage_value, "0.-V")
 
         views.setProgressBar(R.id.speed_progress, 220, 0, false)
         views.setProgressBar(R.id.rpm_progress, 8000, 0, false)
@@ -81,7 +81,7 @@ class GaugesWidget : BaseWidgetProvider() {
         views.setProgressBar(R.id.voltage_progress, 180, 0, false)
 
         views.setImageViewResource(R.id.connection_icon, R.drawable.ic_disconnected)
-        views.setTextViewText(R.id.last_update, "--:--")
+        views.setTextViewText(R.id.last_update, "00:00")
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
