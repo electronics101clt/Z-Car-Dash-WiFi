@@ -14,10 +14,12 @@ All notable changes to Car Dash Integration will be documented in this file.
 - **IP Subnet Detection**: Identifies ESP32 networks by 192.168.4.x subnet
 
 ### Changed
+- **Widget Disconnected State**: Widgets now show "0" instead of "--" when ESP32 WiFi is not connected
 - Enhanced connection logic to prioritize custom credentials over auto-detection
 - Improved user feedback with long-press hints for configuration
 - Updated to use WifiNetworkSpecifier with custom credentials on Android 10+
 - Legacy WiFi connection now supports custom SSID targeting on Android 8-9
+- Widgets continuously update with real ESP32 data when connected
 
 ### Fixed
 - App no longer tries to load WebView before confirming ESP32 connection
