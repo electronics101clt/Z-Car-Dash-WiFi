@@ -14,11 +14,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -28,6 +29,7 @@
             </intent-filter>
         </activity>
 
+        <!-- CarPlay Killer Accessibility Service -->
         <service
             android:name=".CarPlayKillerService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
@@ -40,8 +42,12 @@
                 android:resource="@xml/accessibility_config" />
         </service>
 
+        <!-- ========== WIDGETS ========== -->
+
+        <!-- Original Dashboard Widget -->
         <receiver
             android:name=".DashboardWidget"
+            android:label="Car Dash Classic"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -50,6 +56,103 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/dashboard_widget_info" />
         </receiver>
+
+        <!-- Small Speed Widget (2x1) -->
+        <receiver
+            android:name=".widgets.SpeedSmallWidget"
+            android:label="Car Dash Speed"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_speed_small_info" />
+        </receiver>
+
+        <!-- Compact Widget (2x2) -->
+        <receiver
+            android:name=".widgets.CompactWidget"
+            android:label="Car Dash Compact"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_compact_info" />
+        </receiver>
+
+        <!-- Horizontal Strip Widget (4x1) -->
+        <receiver
+            android:name=".widgets.HorizontalStripWidget"
+            android:label="Car Dash Strip"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_horizontal_strip_info" />
+        </receiver>
+
+        <!-- Medium Dashboard Widget (4x2) -->
+        <receiver
+            android:name=".widgets.DashboardMediumWidget"
+            android:label="Car Dash Medium"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_dashboard_medium_info" />
+        </receiver>
+
+        <!-- Large Dashboard Widget (4x3) -->
+        <receiver
+            android:name=".widgets.DashboardLargeWidget"
+            android:label="Car Dash Full"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_dashboard_large_info" />
+        </receiver>
+
+        <!-- Gauges Widget (3x2) -->
+        <receiver
+            android:name=".widgets.GaugesWidget"
+            android:label="Car Dash Gauges"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_gauges_info" />
+        </receiver>
+
+        <!-- Stack Widget (2x2) - Collection Widget with StackView -->
+        <receiver
+            android:name=".widgets.StackWidget"
+            android:label="Car Dash Stack"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_stack_info" />
+        </receiver>
+
+        <!-- Stack Widget Remote Views Service -->
+        <service
+            android:name=".widgets.StackWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
 
     </application>
 </manifest>

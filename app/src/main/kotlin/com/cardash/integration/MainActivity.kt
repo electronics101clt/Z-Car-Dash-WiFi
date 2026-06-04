@@ -1,4 +1,4 @@
-package com.wifihotspot.selector
+package com.cardash.integration
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var webView: WebView
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
+    private lateinit var credentials: NetworkCredentials
 
     private val TAG = "WifiSelector"
     private val ESP32_URL = "http://192.168.4.1"
@@ -45,9 +46,18 @@ class MainActivity : AppCompatActivity() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         statusText = findViewById(R.id.statusText)
         webView = findViewById(R.id.webView)
+        credentials = NetworkCredentials(this)
 
         setupWebView()
+        setupStatusTextLongPress()
         checkPermissions()
+    }
+
+    private fun setupStatusTextLongPress() {
+        statusText.setOnLongClickListener {
+            showCredentialsDialog()
+            true
+        }
     }
 
     private fun setupWebView() {
@@ -245,24 +255,245 @@ class MainActivity : AppCompatActivity() {
 
         if (ssid != null) {
             settingsOpened = false
-            bindToWifi(ssid)
+
+            // Check if we're on an ESP32 network
+            if (isEsp32Network(ssid)) {
+                Log.d(TAG, "Connected to ESP32 network: $ssid")
+                bindToWifi(ssid)
+            } else {
+                // Not on ESP32, try to switch to it
+                Log.d(TAG, "Currently on $ssid, checking for ESP32 networks...")
+                tryConnectToEsp32()
+            }
         } else {
             if (!wifiManager.isWifiEnabled) {
                 // WiFi still off after forceWifiOn attempt
                 showBlockedByHotspot()
             } else {
                 // WiFi enabled but not connected
-                if (!settingsOpened) {
-                    settingsOpened = true
-                    startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
-                } else {
-                    updateStatus("No WiFi connected\n\nTap to open Settings", true)
-                    statusText.setOnClickListener {
-                        settingsOpened = true
-                        startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                tryConnectToEsp32OrOpenSettings()
+            }
+        }
+    }
+
+    private fun isEsp32Network(ssid: String): Boolean {
+        // Check if SSID indicates ESP32 network
+        return ssid.startsWith("ESP32", ignoreCase = true) ||
+               ssid.contains("ESP32", ignoreCase = true) ||
+               checkIfEsp32Subnet()
+    }
+
+    private fun checkIfEsp32Subnet(): Boolean {
+        // Check if current IP is in 192.168.4.x range (ESP32 default)
+        try {
+            val info = wifiManager.connectionInfo
+            val ipAddress = info?.ipAddress ?: return false
+
+            // Convert int to IP address
+            val ip = String.format(
+                "%d.%d.%d.%d",
+                ipAddress and 0xff,
+                ipAddress shr 8 and 0xff,
+                ipAddress shr 16 and 0xff,
+                ipAddress shr 24 and 0xff
+            )
+
+            Log.d(TAG, "Current IP: $ip")
+            return ip.startsWith("192.168.4.")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to check IP subnet", e)
+            return false
+        }
+    }
+
+    private fun tryConnectToEsp32() {
+        updateStatus("Searching for ESP32...", true)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+: Use WifiNetworkSpecifier to request ESP32 network
+            connectToEsp32Api29Plus()
+        } else {
+            // Android 8-9: Try to connect to saved ESP32 network
+            connectToEsp32Legacy()
+        }
+    }
+
+    private fun tryConnectToEsp32OrOpenSettings() {
+        // WiFi enabled but not connected - try ESP32 or open settings
+        updateStatus("Connecting to ESP32...", true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            connectToEsp32Api29Plus()
+        } else {
+            connectToEsp32Legacy()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun connectToEsp32Api29Plus() {
+        try {
+            // Check if custom credentials are configured
+            val customCreds = credentials.getCredentials()
+
+            val specifier = if (customCreds != null) {
+                // Use custom SSID and password
+                val (ssid, password) = customCreds
+                Log.d(TAG, "Using custom credentials for: $ssid")
+                WifiNetworkSpecifier.Builder()
+                    .setSsid(ssid)
+                    .setWpa2Passphrase(password)
+                    .build()
+            } else {
+                // Auto-detect any ESP32* network
+                Log.d(TAG, "Auto-detecting ESP32 networks")
+                WifiNetworkSpecifier.Builder()
+                    .setSsidPattern(android.os.PatternMatcher("ESP32", android.os.PatternMatcher.PATTERN_PREFIX))
+                    .build()
+            }
+
+            val request = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .setNetworkSpecifier(specifier)
+                .build()
+
+            val callback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    connectivityManager.bindProcessToNetwork(network)
+                    val ssid = getCurrentSsid() ?: "ESP32"
+                    Log.d(TAG, "Connected to ESP32: $ssid")
+
+                    runOnUiThread {
+                        loadEsp32Interface()
+                    }
+                }
+
+                override fun onUnavailable() {
+                    Log.d(TAG, "ESP32 network unavailable")
+                    runOnUiThread {
+                        updateStatus("ESP32 not found\n\nLong-press to configure\nTap to open Settings", true)
+                        statusText.setOnClickListener {
+                            settingsOpened = true
+                            startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                        }
+                    }
+                }
+
+                override fun onLost(network: Network) {
+                    Log.d(TAG, "Lost ESP32 connection")
+                    runOnUiThread {
+                        showConnectionLostDialog()
                     }
                 }
             }
+
+            networkCallback = callback
+            connectivityManager.requestNetwork(request, callback)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to request ESP32 network", e)
+            updateStatus("Error connecting\n\nTap to open Settings", true)
+            statusText.setOnClickListener {
+                settingsOpened = true
+                startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun connectToEsp32Legacy() {
+        // Android 8-9: Try to find and connect to saved ESP32 network
+        try {
+            val configuredNetworks = wifiManager.configuredNetworks
+            if (configuredNetworks == null) {
+                Log.d(TAG, "No configured networks found")
+                openWifiSettingsForEsp32()
+                return
+            }
+
+            // Check if custom credentials are configured
+            val customCreds = credentials.getCredentials()
+
+            // Find ESP32 networks in saved configurations
+            val esp32Networks = if (customCreds != null) {
+                // Look for specific custom SSID
+                val (targetSsid, _) = customCreds
+                Log.d(TAG, "Looking for custom network: $targetSsid")
+                configuredNetworks.filter { config ->
+                    val ssid = config.SSID?.trim('"') ?: ""
+                    ssid.equals(targetSsid, ignoreCase = true)
+                }
+            } else {
+                // Auto-detect any ESP32* network
+                Log.d(TAG, "Auto-detecting ESP32 networks")
+                configuredNetworks.filter { config ->
+                    val ssid = config.SSID?.trim('"') ?: ""
+                    ssid.contains("ESP32", ignoreCase = true)
+                }
+            }
+
+            if (esp32Networks.isEmpty()) {
+                Log.d(TAG, "No saved ESP32 networks found")
+                updateStatus("ESP32 not saved\n\nLong-press to configure\nTap to add network", true)
+                statusText.setOnClickListener {
+                    openWifiSettingsForEsp32()
+                }
+                return
+            }
+
+            // Try to connect to the first ESP32 network
+            val esp32Config = esp32Networks.first()
+            val esp32Ssid = esp32Config.SSID?.trim('"') ?: "ESP32"
+            Log.d(TAG, "Found saved ESP32 network: $esp32Ssid (networkId: ${esp32Config.networkId})")
+
+            updateStatus("Connecting to $esp32Ssid...", true)
+
+            // Disable all networks and enable ESP32 network
+            wifiManager.disconnect()
+
+            val success = wifiManager.enableNetwork(esp32Config.networkId, true)
+            if (success) {
+                Log.d(TAG, "enableNetwork returned true for $esp32Ssid")
+                wifiManager.reconnect()
+
+                // Wait for connection and then bind
+                statusText.postDelayed({
+                    val currentSsid = getCurrentSsid()
+                    if (currentSsid != null && isEsp32Network(currentSsid)) {
+                        Log.d(TAG, "Successfully connected to ESP32: $currentSsid")
+                        bindToWifi(currentSsid)
+                    } else {
+                        Log.d(TAG, "Connection failed or took too long, current SSID: $currentSsid")
+                        updateStatus("Connection failed\n\nTap to open Settings", true)
+                        statusText.setOnClickListener {
+                            openWifiSettingsForEsp32()
+                        }
+                    }
+                }, 3000)
+            } else {
+                Log.d(TAG, "enableNetwork returned false for $esp32Ssid")
+                updateStatus("Cannot connect\n\nTap to open Settings", true)
+                statusText.setOnClickListener {
+                    openWifiSettingsForEsp32()
+                }
+            }
+
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Permission denied for legacy WiFi connection", e)
+            openWifiSettingsForEsp32()
+        } catch (e: Exception) {
+            Log.e(TAG, "Legacy ESP32 connection failed", e)
+            updateStatus("Error: ${e.message}\n\nTap to open Settings", true)
+            statusText.setOnClickListener {
+                openWifiSettingsForEsp32()
+            }
+        }
+    }
+
+    private fun openWifiSettingsForEsp32() {
+        updateStatus("Please connect to ESP32 network\n\nLong-press to configure credentials", true)
+        if (!settingsOpened) {
+            settingsOpened = true
+            startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
         }
     }
 
@@ -329,45 +560,18 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun bindToWifiApi29Plus(ssid: String) {
+        // Already connected to ESP32, just bind and load interface
         try {
-            val specifier = WifiNetworkSpecifier.Builder()
-                .setSsid(ssid)
-                .build()
-
-            val request = NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .setNetworkSpecifier(specifier)
-                .build()
-
-            val callback = object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
+            for (network in connectivityManager.allNetworks) {
+                val caps = connectivityManager.getNetworkCapabilities(network)
+                if (caps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true) {
                     connectivityManager.bindProcessToNetwork(network)
                     Log.d(TAG, "Bound to $ssid (API 29+)")
-
-                    // Dismiss settings dialog by bringing app to foreground
-                    val intent = Intent(this@MainActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent)
-
                     loadEsp32Interface()
-                }
-
-                override fun onUnavailable() {
-                    updateStatus("WiFi not available", true)
-                    Log.d(TAG, "WiFi connection unavailable")
-                    showConnectionLostDialog()
-                }
-
-                override fun onLost(network: Network) {
-                    updateStatus("Connection lost", true)
-                    Log.d(TAG, "Lost WiFi connection")
-                    showConnectionLostDialog()
+                    return
                 }
             }
-
-            networkCallback = callback
-            connectivityManager.requestNetwork(request, callback)
+            updateStatus("WiFi not available", true)
         } catch (e: Exception) {
             Log.e(TAG, "API 29+ bind failed", e)
             updateStatus("Error: ${e.message}")
@@ -400,6 +604,49 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl(ESP32_URL)
             Log.d(TAG, "Loading ESP32 interface: $ESP32_URL")
         }
+    }
+
+    private fun showCredentialsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_credentials, null)
+        val ssidInput = dialogView.findViewById<android.widget.EditText>(R.id.ssidInput)
+        val passwordInput = dialogView.findViewById<android.widget.EditText>(R.id.passwordInput)
+
+        // Pre-fill with existing credentials
+        credentials.getCredentials()?.let { (ssid, password) ->
+            ssidInput.setText(ssid)
+            passwordInput.setText(password)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("ESP32 Network Configuration")
+            .setMessage("Enter ESP32 WiFi credentials\n(Leave empty to auto-detect any ESP32* network)")
+            .setView(dialogView)
+            .setPositiveButton("Save") { dialog, _ ->
+                val ssid = ssidInput.text.toString().trim()
+                val password = passwordInput.text.toString()
+
+                if (ssid.isNotEmpty() && password.isNotEmpty()) {
+                    credentials.saveCredentials(ssid, password)
+                    updateStatus("Credentials saved\nReconnecting...", true)
+                    statusText.postDelayed({ forceWifiOn() }, 1000)
+                } else if (ssid.isEmpty() && password.isEmpty()) {
+                    credentials.clearCredentials()
+                    updateStatus("Auto-detect mode\nReconnecting...", true)
+                    statusText.postDelayed({ forceWifiOn() }, 1000)
+                } else {
+                    updateStatus("Error: Both SSID and password required", true)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNeutralButton("Clear") { dialog, _ ->
+                credentials.clearCredentials()
+                updateStatus("Credentials cleared", true)
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun showConnectionLostDialog() {

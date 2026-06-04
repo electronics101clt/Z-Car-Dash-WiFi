@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ZScreen Dash</string>
+    <string name="app_name">Car Dash</string>
     <string name="accessibility_description">Allows the app to stop CarPlay and take over WiFi control. Required to release the hotspot when CarPlay is blocking WiFi.</string>
+
+    <!-- Widget Descriptions -->
     <string name="widget_description">Shows live car dashboard data from ESP32</string>
+    <string name="widget_speed_description">Minimal speed display - just your current speed</string>
+    <string name="widget_compact_description">Compact dashboard with speed, RPM, and essential stats</string>
+    <string name="widget_strip_description">Horizontal strip showing all metrics in a row</string>
+    <string name="widget_medium_description">Enhanced dashboard with gauges and progress bars</string>
+    <string name="widget_large_description">Full dashboard with all gauges, trip data, and stats</string>
+    <string name="widget_gauges_description">Visual gauge-focused display with progress indicators</string>
+    <string name="widget_stack_description">Swipe through metrics one at a time</string>
+
+    <!-- Widget Labels -->
+    <string name="speed">Speed</string>
+    <string name="rpm">RPM</string>
+    <string name="coolant">Coolant</string>
+    <string name="fuel">Fuel</string>
+    <string name="voltage">Voltage</string>
+    <string name="oil">Oil Temp</string>
+    <string name="trip">Trip</string>
+
+    <!-- Connection States -->
+    <string name="connected">Connected to ESP32</string>
+    <string name="disconnected">Tap to connect</string>
+    <string name="connecting">Connecting...</string>
+    <string name="error">Connection error</string>
+
+    <!-- Warnings -->
+    <string name="warning_fuel_low">Low fuel!</string>
+    <string name="warning_temp_high">High temperature!</string>
+    <string name="warning_voltage_low">Low battery!</string>
 </resources>

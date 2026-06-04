@@ -1,4 +1,4 @@
-package com.wifihotspot.selector
+package com.cardash.integration
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager

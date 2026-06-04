@@ -4,15 +4,34 @@ plugins {
 }
 
 android {
-    namespace 'com.wifihotspot.selector'
+    namespace 'com.cardash.integration'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.wifihotspot.selector"
+        applicationId "com.cardash.integration"
         minSdk 26
         targetSdk 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "2.1"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../release-key.jks')
+            storePassword 'zscreen123'
+            keyAlias 'zscreendash'
+            keyPassword 'zscreen123'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
     }
 
     compileOptions {
@@ -23,10 +42,16 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 }
