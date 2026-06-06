@@ -9,32 +9,53 @@
         android:layout_height="match_parent"
         android:visibility="visible"/>
 
-    <!-- WiFi Status Dashboard -->
-    <LinearLayout
+    <!-- WiFi Status Dashboard with Material Atmosphere -->
+    <FrameLayout
         android:id="@+id/dashboardContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="#F5F5F5"
-        android:visibility="gone"
-        android:padding="24dp">
+        android:visibility="gone">
 
-        <!-- Status Card -->
+        <!-- Background Image -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/dashboard_background"
+            android:scaleType="centerCrop"
+            android:alpha="0.9"/>
+
+        <!-- Dark Overlay for better text visibility -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#55000000"/>
+
+        <!-- Content Container -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/card_background"
-            android:elevation="4dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <!-- Header Image - fills space above status card -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:src="@drawable/dashboard_header"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Status Card with Glass Effect - Compact -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/card_background"
+                android:elevation="8dp"
                 android:orientation="vertical"
-                android:padding="24dp"
-                android:gravity="center">
+                android:padding="16dp">
 
                 <!-- Status Icon -->
                 <TextView
@@ -42,8 +63,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📡"
-                    android:textSize="64sp"
-                    android:layout_marginBottom="16dp"/>
+                    android:textSize="48sp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="12dp"/>
 
                 <!-- Network Name -->
                 <TextView
@@ -51,9 +73,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Searching for ZS..."
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#212121"
+                    android:textColor="#FFFFFF"
+                    android:layout_gravity="center"
                     android:layout_marginBottom="8dp"/>
 
                 <!-- Status Message -->
@@ -62,9 +85,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Checking WiFi connection..."
-                    android:textSize="14sp"
-                    android:textColor="#757575"
+                    android:textSize="12sp"
+                    android:textColor="#E0E0E0"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     android:layout_marginBottom="8dp"/>
 
                 <!-- IP Address -->
@@ -73,43 +97,48 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textSize="12sp"
-                    android:textColor="#9E9E9E"
+                    android:textSize="11sp"
+                    android:textColor="#B0B0B0"
+                    android:layout_gravity="center"
                     android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <!-- Refresh Button -->
+                <Button
+                    android:id="@+id/refreshButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Refresh"
+                    android:textSize="13sp"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#4CAF50"/>
+
+                <!-- WiFi Settings Button -->
+                <Button
+                    android:id="@+id/wifiSettingsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="WiFi Settings"
+                    android:textSize="13sp"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#2196F3"/>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <!-- Refresh Button -->
-            <Button
-                android:id="@+id/refreshButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="Refresh"
-                android:textSize="14sp"/>
-
-            <!-- WiFi Settings Button -->
-            <Button
-                android:id="@+id/wifiSettingsButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="WiFi Settings"
-                android:textSize="14sp"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FFFFFF"/>
-    <corners android:radius="8dp"/>
+    <!-- Semi-transparent dark glass effect -->
+    <solid android:color="#CC1A1A1A"/>
+    <corners android:radius="16dp"/>
+    <stroke
+        android:width="2dp"
+        android:color="#40FFFFFF"/>
 </shape>
