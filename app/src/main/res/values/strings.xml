@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Car Dash</string>
+    <string name="app_name">Z Car Dash</string>
     <string name="accessibility_description">Allows the app to stop CarPlay and take over WiFi control. Required to release the hotspot when CarPlay is blocking WiFi.</string>
 
     <!-- Widget Descriptions -->

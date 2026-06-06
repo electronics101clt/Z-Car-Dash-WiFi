@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Car Dash Integration will be documented in this file.
+All notable changes to Z Car Dash will be documented in this file.
 
 ## [2.1] - 2026-06-04
 
@@ -107,7 +107,7 @@ All notable changes to Car Dash Integration will be documented in this file.
 
 ### Related Projects
 - [ESP32 Car Dashboard](https://github.com/electronics101clt/esp32-car-dashboard) - Comprehensive car dashboard with 8 gauges
-- [ZScreen ESP Client](https://github.com/electronics101clt/ZScreenESPClient) - Compatible ESP32 web server
+- [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard) - ESP32 car dashboard with 8 gauges
 
 ---
 

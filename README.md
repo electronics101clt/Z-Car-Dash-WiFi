@@ -1,4 +1,4 @@
-# ZScreen Dash
+# Z Car Dash
 
 Android app that automatically connects to ESP32 WiFi networks and displays their web interface, bypassing hotspot mode and CarPlay interference.
 
@@ -45,7 +45,7 @@ Compatible with ESP32 access points using:
 - **IP**: 192.168.4.1
 - **Protocol**: HTTP (cleartext)
 
-See companion project: [esp32_webserver](https://github.com/electronics101clt/esp32_webserver)
+See companion project: [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard)
 
 ## Permissions Required
 
@@ -79,8 +79,8 @@ Download latest APK from [Releases](https://github.com/electronics101clt/ZScreen
 ## Usage
 
 1. Flash ESP32 with web server firmware
-2. Install ZScreen Dash on Android device
-3. Open ZScreen Dash app
+2. Install Z Car Dash on Android device
+3. Open Z Car Dash app
 4. App automatically connects to ESP32
 5. Web interface appears
 6. Close app when done (restores original state)
@@ -144,7 +144,7 @@ Uses reflection to access hidden Android API for disabling WiFi hotspot.
 
 ## Related Projects
 
-- [esp32_webserver](https://github.com/electronics101clt/esp32_webserver) - Compatible ESP32 web server
+- [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard) - ESP32 car dashboard with 8 gauges
 
 ## License
 
