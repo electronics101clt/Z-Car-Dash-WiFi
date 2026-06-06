@@ -24,7 +24,7 @@ import java.util.concurrent.Executors
 abstract class BaseWidgetProvider : AppWidgetProvider() {
 
     companion object {
-        const val ESP32_URL = "http://192.168.4.1/api/data"
+        const val ZS_URL = "http://192.168.4.1/api/data"
         val executor = Executors.newSingleThreadExecutor()
         val mainHandler = Handler(Looper.getMainLooper())
 
@@ -55,7 +55,7 @@ abstract class BaseWidgetProvider : AppWidgetProvider() {
 
         fun fetchDashboardData(): JSONObject? {
             return try {
-                val response = URL(ESP32_URL).readText()
+                val response = URL(ZS_URL).readText()
                 JSONObject(response)
             } catch (e: Exception) {
                 null

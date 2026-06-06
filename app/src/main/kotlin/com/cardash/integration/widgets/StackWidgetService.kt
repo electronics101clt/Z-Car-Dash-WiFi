@@ -40,7 +40,7 @@ class StackWidgetFactory(private val context: Context) : RemoteViewsService.Remo
     }
 
     override fun onDataSetChanged() {
-        // Fetch data from ESP32
+        // Fetch data from ZS
         val data = fetchData()
         metrics.clear()
 
@@ -110,7 +110,7 @@ class StackWidgetFactory(private val context: Context) : RemoteViewsService.Remo
 
     private fun fetchData(): JSONObject? {
         return try {
-            val response = URL(BaseWidgetProvider.ESP32_URL).readText()
+            val response = URL(BaseWidgetProvider.ZS_URL).readText()
             JSONObject(response)
         } catch (e: Exception) {
             null

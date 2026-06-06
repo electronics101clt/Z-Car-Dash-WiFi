@@ -36,7 +36,7 @@ class DashboardWidget : AppWidgetProvider() {
     }
 
     companion object {
-        private const val ESP32_URL = "http://192.168.4.1/api/data"
+        private const val ZS_URL = "http://192.168.4.1/api/data"
         private val executor = Executors.newSingleThreadExecutor()
         private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -55,7 +55,7 @@ class DashboardWidget : AppWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.speed_value, pendingIntent)
 
-            // Fetch data from ESP32 in background thread
+            // Fetch data from ZS in background thread
             executor.execute {
                 try {
                     val data = fetchDashboardData()
@@ -84,7 +84,7 @@ class DashboardWidget : AppWidgetProvider() {
 
         private fun fetchDashboardData(): JSONObject? {
             return try {
-                val response = URL(ESP32_URL).readText()
+                val response = URL(ZS_URL).readText()
                 JSONObject(response)
             } catch (e: Exception) {
                 null

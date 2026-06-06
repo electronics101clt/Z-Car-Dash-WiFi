@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="6dp"
-            android:text="Tap to connect to ESP32"
+            android:text="Tap to connect to ZS"
             android:textColor="#f44336"
             android:textSize="11sp" />
 

@@ -7,7 +7,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 /**
- * Secure storage for ESP32 WiFi credentials
+ * Secure storage for ZS WiFi credentials
  */
 class NetworkCredentials(context: Context) {
 
@@ -37,7 +37,7 @@ class NetworkCredentials(context: Context) {
     }
 
     /**
-     * Save custom ESP32 network credentials
+     * Save custom ZS network credentials
      */
     fun saveCredentials(ssid: String, password: String) {
         prefs.edit().apply {

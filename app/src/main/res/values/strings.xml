@@ -4,7 +4,7 @@
     <string name="accessibility_description">Allows the app to stop CarPlay and take over WiFi control. Required to release the hotspot when CarPlay is blocking WiFi.</string>
 
     <!-- Widget Descriptions -->
-    <string name="widget_description">Shows live car dashboard data from ESP32</string>
+    <string name="widget_description">Shows live car dashboard data from ZS</string>
     <string name="widget_speed_description">Minimal speed display - just your current speed</string>
     <string name="widget_compact_description">Compact dashboard with speed, RPM, and essential stats</string>
     <string name="widget_strip_description">Horizontal strip showing all metrics in a row</string>
@@ -23,7 +23,7 @@
     <string name="trip">Trip</string>
 
     <!-- Connection States -->
-    <string name="connected">Connected to ESP32</string>
+    <string name="connected">Connected to ZS</string>
     <string name="disconnected">Tap to connect</string>
     <string name="connecting">Connecting...</string>
     <string name="error">Connection error</string>

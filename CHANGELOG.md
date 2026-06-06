@@ -5,30 +5,30 @@ All notable changes to Z Car Dash will be documented in this file.
 ## [2.1] - 2026-06-04
 
 ### Added
-- **Intelligent ESP32 Detection**: Automatically detects and connects to any ESP32 variant network
+- **Intelligent ZS Detection**: Automatically detects and connects to any ZS variant network
 - **In-App Credential Configuration**: Long-press status text to configure custom SSID and password
-- **Encrypted Credential Storage**: Securely stores ESP32 WiFi credentials using EncryptedSharedPreferences
-- **Auto-Connect to Saved Networks**: Automatically switches to ESP32 networks when credentials are saved
+- **Encrypted Credential Storage**: Securely stores ZS WiFi credentials using EncryptedSharedPreferences
+- **Auto-Connect to Saved Networks**: Automatically switches to ZS networks when credentials are saved
 - **Android 8.0-10.0+ Support**: Full compatibility across Android 8.0, 9.0, and 10.0+ with different connection methods
-- **Pattern Matching**: Auto-detects any network with "ESP32" in SSID name
-- **IP Subnet Detection**: Identifies ESP32 networks by 192.168.4.x subnet
+- **Pattern Matching**: Auto-detects any network with "ZS" in SSID name
+- **IP Subnet Detection**: Identifies ZS networks by 192.168.4.x subnet
 
 ### Changed
-- **Widget Disconnected State**: Widgets now show "0" instead of "--" when ESP32 WiFi is not connected
+- **Widget Disconnected State**: Widgets now show "0" instead of "--" when ZS WiFi is not connected
 - Enhanced connection logic to prioritize custom credentials over auto-detection
 - Improved user feedback with long-press hints for configuration
 - Updated to use WifiNetworkSpecifier with custom credentials on Android 10+
 - Legacy WiFi connection now supports custom SSID targeting on Android 8-9
-- Widgets continuously update with real ESP32 data when connected
+- Widgets continuously update with real ZS data when connected
 
 ### Fixed
-- App no longer tries to load WebView before confirming ESP32 connection
-- Connection timeout errors when not on ESP32 network
+- App no longer tries to load WebView before confirming ZS connection
+- Connection timeout errors when not on ZS network
 
 ## [2.0] - Previous Release
 
 ### Added
-- Auto-dismiss WiFi settings dialog when successfully connected to ESP32
+- Auto-dismiss WiFi settings dialog when successfully connected to ZS
 - Connection lost alert dialog when WiFi disconnects while app is running
 - Automatic app exit after user dismisses connection lost dialog
 - Improved network callback handling for Android 10+ (API 29+)
@@ -44,24 +44,24 @@ All notable changes to Z Car Dash will be documented in this file.
 ## [1.0.0] - Initial Release
 
 ### Features
-- **Automatic WiFi Connection**: Forces WiFi on and connects to ESP32 access points
+- **Automatic WiFi Connection**: Forces WiFi on and connects to ZS access points
 - **Hotspot Override**: Kills device hotspot to free WiFi hardware
 - **CarPlay Bypass**: Automatically disables Bluetooth to prevent CarPlay interference
 - **State Restoration**: Restores Bluetooth and hotspot when app closes
-- **WebView Interface**: Displays ESP32 web interface directly in app
+- **WebView Interface**: Displays ZS web interface directly in app
 - **Multi-Android Support**: Works on Android 8.0, 9.0, and 10.0+
 
 ### Android 10+ (API 29+)
 - Uses WiFi Network Request API with `removeCapability(NET_CAPABILITY_INTERNET)`
 - Suppresses "no internet" warnings
-- Maintains stable connection to local ESP32 networks
+- Maintains stable connection to local ZS networks
 
 ### Android 8-9 (API 26-28)
 - Uses legacy `bindProcessToNetwork()` method
 - System notifications may appear but connection remains stable
 
 ### Permissions Required
-- `INTERNET` - WebView access to ESP32
+- `INTERNET` - WebView access to ZS
 - `BLUETOOTH` - Query Bluetooth state
 - `BLUETOOTH_ADMIN` - Disable/enable Bluetooth
 - `ACCESS_WIFI_STATE` - Check WiFi status
@@ -75,8 +75,8 @@ All notable changes to Z Car Dash will be documented in this file.
 ### Optional
 - Accessibility Service for devices where hotspot blocks WiFi forcing
 
-### ESP32 Configuration
-- **SSID**: ESP32-Control (configurable)
+### ZS Configuration
+- **SSID**: ZS-Control (configurable)
 - **Password**: 12345678 (configurable)
 - **IP**: 192.168.4.1
 - **Protocol**: HTTP (cleartext)
@@ -102,12 +102,12 @@ All notable changes to Z Car Dash will be documented in this file.
 ### Use Cases
 - Car head units with CarPlay that block WiFi
 - IoT device configuration and control
-- ESP32-based projects requiring persistent WiFi connection
+- ZS-based projects requiring persistent WiFi connection
 - Local network access on devices that prefer cellular data
 
 ### Related Projects
-- [ESP32 Car Dashboard](https://github.com/electronics101clt/esp32-car-dashboard) - Comprehensive car dashboard with 8 gauges
-- [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard) - ESP32 car dashboard with 8 gauges
+- [ZS Car Dashboard](https://github.com/electronics101clt/esp32-car-dashboard) - Comprehensive car dashboard with 8 gauges
+- [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard) - ZS car dashboard with 8 gauges
 
 ---
 

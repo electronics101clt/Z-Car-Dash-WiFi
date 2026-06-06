@@ -73,7 +73,7 @@ class DashboardLargeWidget : BaseWidgetProvider() {
 
         // Connection status
         views.setImageViewResource(R.id.connection_icon, R.drawable.ic_connection)
-        views.setTextViewText(R.id.connection_text, "Connected to ESP32")
+        views.setTextViewText(R.id.connection_text, "Connected to ZS")
         views.setTextColor(R.id.connection_text, COLOR_CONNECTED)
 
         // Update time
@@ -112,7 +112,7 @@ class DashboardLargeWidget : BaseWidgetProvider() {
         views.setProgressBar(R.id.oil_progress, 150, 0, false)
 
         views.setImageViewResource(R.id.connection_icon, R.drawable.ic_disconnected)
-        views.setTextViewText(R.id.connection_text, "Tap to connect to ESP32")
+        views.setTextViewText(R.id.connection_text, "Tap to connect to ZS")
         views.setTextColor(R.id.connection_text, COLOR_DISCONNECTED)
 
         views.setTextViewText(R.id.last_update, "Updated: --:--:--")
