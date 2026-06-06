@@ -1,3 +1,32 @@
+<!--
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │                        © 2024 ZScreen Electronics                           │
+  │                          All Rights Reserved.                               │
+  │                                                                             │
+  │  This software is protected by U.S. copyright law (17 U.S.C. § 102).        │
+  │  The copyright holder retains exclusive rights to reproduction,             │
+  │  distribution, and derivative works.                                        │
+  │                                                                             │
+  │  While this repository is publicly available for viewing and learning,      │
+  │  unauthorized reproduction or distribution without explicit permission      │
+  │  from ZScreen Electronics violates federal law and may result in civil      │
+  │  and criminal penalties.                                                    │
+  │                                                                             │
+  │  For licensing inquiries: https://zscreenusa.com                            │
+  └─────────────────────────────────────────────────────────────────────────────┘
+-->
+
+<p align="center">
+  <strong>© 2024 ZScreen Electronics. All Rights Reserved.</strong><br>
+  <a href="https://zscreenusa.com">zscreenusa.com</a>
+</p>
+
+<p align="center">
+  <em>This software is protected by U.S. copyright law (17 U.S.C. § 102). The copyright holder retains exclusive rights to reproduction, distribution, and derivative works. Public availability does not grant usage rights without explicit license. For licensing inquiries, visit <a href="https://zscreenusa.com">zscreenusa.com</a>.</em>
+</p>
+
+---
+
 # Z Car Dash WiFi
 
 Android app that automatically connects to ZS WiFi networks and displays their web interface, bypassing hotspot mode and CarPlay interference using silent root detection inspired by Aptoide's approach.
