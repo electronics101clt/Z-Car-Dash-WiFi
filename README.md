@@ -245,6 +245,15 @@ Compatible with ZS access points using:
 
 **Note**: The ESP32 generates a random 8-digit serial number on first boot and creates an SSID like `ZS-12345678`. This number is persistent across reboots. The Android app must be configured to match your specific ESP32's SSID.
 
+### Automatic OBD-II Integration
+
+The ESP32 companion automatically scans for and connects to Bluetooth Low Energy (BLE) ELM327 adapters:
+- Scans on boot for devices named "OBD", "ELM", "V-LINK", or "IOS-"
+- Auto-reconnects every 15 seconds if connection is lost
+- Queries real-time vehicle data (speed, RPM, temperature, etc.) every 200ms
+- Falls back to simulation mode if no adapter found
+- No user interaction required - fully automatic
+
 See companion project: [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard)
 
 ## Permissions Required
