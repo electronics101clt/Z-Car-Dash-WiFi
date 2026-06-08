@@ -238,10 +238,12 @@ try {
 ## ZS Configuration
 
 Compatible with ZS access points using:
-- **SSID**: ZS-Control (configurable)
+- **SSID**: `ZS-XXXXXXXX` (dynamic - 8-digit random serial number, e.g., `ZS-12345678`)
 - **Password**: 12345678 (configurable)
 - **IP**: 192.168.4.1
 - **Protocol**: HTTP (cleartext)
+
+**Note**: The ESP32 generates a random 8-digit serial number on first boot and creates an SSID like `ZS-12345678`. This number is persistent across reboots. The Android app must be configured to match your specific ESP32's SSID.
 
 See companion project: [esp32_car_dashboard](https://github.com/electronics101clt/esp32_car_dashboard)
 
